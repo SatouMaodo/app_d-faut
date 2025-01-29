@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}  # Nom de votre application Heroku
-      PYTHON_VERSION: 3.9.13 # Version de python
+      HEROKU_APP_BIS_NAME: ${{ secrets.HEROKU_APP_BIS_NAME }}  # Nom de votre application Heroku
+      PYTHON_VERSION: 3.11.11 # Version de python
 
     steps:
       - name: Checkout code
@@ -44,5 +44,5 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12 # ou une version plus récente si disponible
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_BIS_NAME }}
           heroku_buildpack: "heroku/python" # Spécifier le buildpack Python
