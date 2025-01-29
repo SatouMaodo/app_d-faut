@@ -1,1 +1,1 @@
-web: streamlit run app_bis.py
+web: streamlit run Downloads/deploy_app/app_bis.py
