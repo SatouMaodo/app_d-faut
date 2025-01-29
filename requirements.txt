@@ -1,10 +1,10 @@
-streamlit
-joblib
-pandas
-shap
-matplotlib
-scikit-learn
-Pillow
-plotly
-numpy
-mlflow
+streamlit==1.27.0  # Ou la version que vous utilisez localement
+joblib==1.3.2      # Ou la version que vous utilisez localement
+pandas==2.1.1     # Ou la version que vous utilisez localement
+shap==0.41.0       # Ou la version que vous utilisez localement
+matplotlib==3.8.0  # Ou la version que vous utilisez localement
+scikit-learn==1.3.2 # Ou la version que vous utilisez localement
+Pillow==10.0.1     # Ou la version que vous utilisez localement
+plotly==5.17.2     # Ou la version que vous utilisez localement
+numpy==1.26.0      # Ou la version que vous utilisez localement
+mlflow==2.7.1      # Ou la version que vous utilisez localement
