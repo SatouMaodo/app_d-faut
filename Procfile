@@ -1,1 +1,1 @@
-web: streamlit run Downloads/deploy_app/app.py
+web: streamlit run app.py
