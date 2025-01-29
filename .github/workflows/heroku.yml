@@ -3,15 +3,15 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - main  # Ou la branche que vous utilisez pour le déploiement
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      HEROKU_APP_BIS_NAME: ${{ secrets.HEROKU_APP_BIS_NAME }}  # Nom de votre application Heroku
-      PYTHON_VERSION: 3.11.11 # Version de python
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      PYTHON_VERSION: 3.9.13
 
     steps:
       - name: Checkout code
@@ -28,21 +28,27 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }} # Utiliser la variable d'environnement
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # Installer gunicorn si vous l'utilisez pour servir votre application Streamlit
           pip install gunicorn
-          # Installation de Streamlit, pas mlflow ici, il est dans requirements.txt
           pip install streamlit
-          # Pas besoin d'installer heroku CLI ici, l'action heroku-deploy s'en charge
+
+      # Installation du Heroku CLI (avant l'action de déploiement)
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          # Ajout du binaire heroku au PATH
+          export PATH=$PATH:/home/runner/.local/share/heroku/bin
+          # Vérification de l'installation
+          heroku --version  # Pour le débogage
 
       - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12 # ou une version plus récente si disponible
+        uses: akhileshns/heroku-deploy@v3.12.12 # ou la dernière version
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_BIS_NAME }}
-          heroku_buildpack: "heroku/python" # Spécifier le buildpack Python
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          #heroku_buildpack: "heroku/python"  # Pas nécessaire si Procfile présent
