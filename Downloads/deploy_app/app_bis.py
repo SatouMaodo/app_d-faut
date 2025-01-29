@@ -39,9 +39,9 @@ def impute_and_standardize(X):
 
     return X_scaled
 # Chargement du modèle et des données
-best_model = joblib.load('best_model.joblib')
+best_model = joblib.load('Downloads/deploy_app/best_model.joblib')
 
-test_df= pd.read_csv('test_df.csv')
+test_df= pd.read_csv('Downloads/deploy_app/test_df.csv')
 y = test_df['TARGET']
 X = test_df.drop(columns=['TARGET'])
 
@@ -63,7 +63,7 @@ influential_features = ['EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH', 'DAYS_EMPL
 #num_refused = sum(predict >=0.76)
 
 # Charger le logo
-logo_image = Image.open("logo.png")
+logo_image = Image.open("Downloads/deploy_app/logo.png")
 # Afficher le logo en haut à gauche (une seule fois)
 st.sidebar.image(logo_image, use_container_width=True)
 #st.sidebar.markdown(f"**Nombre d'acceptés :** {num_accepted}")
