@@ -11,7 +11,7 @@ jobs:
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-      PYTHON_VERSION: 3.9.13
+      PYTHON_VERSION: 3.11.11
 
     steps:
       - name: Checkout code
