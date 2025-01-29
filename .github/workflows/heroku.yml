@@ -1,0 +1,48 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main  # Ou la branche que vous utilisez pour le déploiement
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}  # Nom de votre application Heroku
+      PYTHON_VERSION: 3.9.13 # Version de python
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }} # Utiliser la variable d'environnement
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Installer gunicorn si vous l'utilisez pour servir votre application Streamlit
+          pip install gunicorn
+          # Installation de Streamlit, pas mlflow ici, il est dans requirements.txt
+          pip install streamlit
+          # Pas besoin d'installer heroku CLI ici, l'action heroku-deploy s'en charge
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12 # ou une version plus récente si disponible
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_buildpack: "heroku/python" # Spécifier le buildpack Python
