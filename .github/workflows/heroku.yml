@@ -37,18 +37,17 @@ jobs:
           pip install gunicorn
           pip install streamlit
 
-      # Installation du Heroku CLI (avant l'action de déploiement)
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
-          # Ajout du binaire heroku au PATH
           export PATH=$PATH:/home/runner/.local/share/heroku/bin
-          # Vérification de l'installation
-          heroku --version  # Pour le débogage
+          heroku --version  
+
+      - name: Set Heroku config vars
+        run: heroku config:set HEROKU_APP_BOOT_TIMEOUT=120 --app ${{ secrets.HEROKU_APP_NAME }}
 
       - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12 # ou la dernière version
+        uses: akhileshns/heroku-deploy@v3.12.12 
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          #heroku_buildpack: "heroku/python"  # Pas nécessaire si Procfile présent
