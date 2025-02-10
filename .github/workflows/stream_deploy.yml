@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11.11'  # Utilisez la version de Python compatible avec votre application
+          python-version: '3.12'  # Utilisez la version de Python compatible avec votre application
 
       # 3. Installer les dépendances
       - name: Install dependencies
