@@ -119,9 +119,6 @@ if selected_sk_id_curr:
                 else:
                     st.markdown("<h4 style='color:green;'>Faible risque de défaut</h4>", unsafe_allow_html=True)
 
-                # Décision finale
-                decision = "Accepté" if prediction < decision_threshold else "Refusé"
-                st.markdown(f"### Décision : {decision}")
             else:
                 st.error(f"Erreur de l'API: {response.status_code}")
         except Exception as e:
