@@ -11,13 +11,13 @@ from PIL import Image
 API_URL = "https://fastapi-appli-88ed9063cc28.herokuapp.com"
 
 # === Chargement des données test ===
-test_df = pd.read_csv('test.csv', sep=';')
+test_df = pd.read_csv('test_df.csv')
 
 # Chargement du logo
 logo_image = Image.open("logo.png")
 st.sidebar.image(logo_image, use_container_width=True)
 
-# Affichage des informations sur l'étudiante et le projet
+# Informations sur l'étudiante et le projet
 st.sidebar.markdown(
     """
     <style>
@@ -57,52 +57,75 @@ st.markdown(
 
 # === Interface principale ===
 st.markdown("## Prédiction de la probabilité de défaut")
-decision_threshold = st.slider("Seuil de décision", 0.0, 1.0, 0.76, 0.01)
+
+# Seuil de décision
+decision_threshold = 0.76
 
 # Sélection de l'identité du demandeur
 sk_id_curr_list = test_df['SK_ID_CURR'].unique()
 selected_sk_id_curr = st.selectbox("Sélectionnez un demandeur", sk_id_curr_list)
 
 if selected_sk_id_curr:
-    # === Requête à l'API pour obtenir la prédiction ===
     if st.button("Prédire"):
         try:
-            # Ajout de 'verify=False' pour ignorer l'erreur SSL
             response = requests.post(f"{API_URL}/predict", json={"client_id": int(selected_sk_id_curr)}, verify=False)
 
             if response.status_code == 200:
                 prediction = response.json()["prediction"]
                 credit_score = int((1 - prediction) * 100)
-                decision = "Accepté" if prediction < decision_threshold else "Refusé"
 
                 st.markdown(f"**Probabilité de défaut:** {prediction:.2f}")
+                st.markdown(f"**Score de crédit:** {credit_score:.2f}")
 
-                if decision == "Accepté":
-                    st.success(f"Décision: {decision} (Score: {credit_score})")
-                else:
-                    st.error(f"Décision: {decision} (Score: {credit_score})")
+                # Interprétation du score
+                st.markdown("### Interprétation du score")
+                st.write(
+                    """
+                    - **Le score est calculé comme suit :** (1 - Probabilité de défaut) * 100.
+                    - **Un score proche de 100** indique un **faible risque** de défaut.
+                    - **Un score proche de 0** indique un **risque élevé** de défaut.
+                    - **Seuil de probabilité critique :** Une probabilité de défaut supérieure à **0.76** est considérée comme un défaut.
+                    - **Score critique=**(1-0.76)*100= **24%**. Un score inférieur ou égal à 24% indique un défaut.
+                    """
+                )
 
-                # === Score de crédit ===
+                # Affichage de la jauge
                 fig = go.Figure(go.Indicator(
                     mode="gauge+number",
                     value=credit_score,
                     title={'text': "Score de crédit"},
                     gauge={
                         'axis': {'range': [0, 100]},
-                        'bar': {'color': "darkblue"},
+                        'bar': {'color': "grey"},
                         'steps': [
-                            {'range': [0, 50], 'color': "red"},
-                            {'range': [50, 76], 'color': "orange"},
-                            {'range': [76, 100], 'color': "green"}
-                        ],
-                        'threshold': {'line': {'color': "black", 'width': 4}, 'value': credit_score}
+                            {'range': [0, 24], 'color': "red"},
+                            {'range': [25, 50], 'color': "orange"},
+                            {'range': [51, 76], 'color': "yellow"},
+                            {'range': [77, 100], 'color': "green"}
+                        ]
                     }
                 ))
                 st.plotly_chart(fig)
+
+                # Affichage du résultat avec couleur
+                if credit_score <= 24:
+                    st.markdown("<h4 style='color:red;'>Risque de défaut du client élevé</h4>", unsafe_allow_html=True)
+                elif 24 < credit_score <= 50:
+                    st.markdown("<h4 style='color:balck;'>Risque modéré : Analyse complémentaire nécessaire.Cela signifie que des informations supplémentaires doivent être collectées et analysées, comme des documents financiers ou des justificatifs, avant de prendre une décision</h4>",
+                                unsafe_allow_html=True)
+                elif 51 <= credit_score <= 76:
+                    st.markdown("<h4 style='color:black;'>Risque intermédiaire : Revue attentive ( La situation semble globalement acceptable, mais une vérification plus approfondie du dossier est recommandée avant d'approuver le crédit)</h4>",
+                                unsafe_allow_html=True)
+                else:
+                    st.markdown("<h4 style='color:green;'>Faible risque de défaut</h4>", unsafe_allow_html=True)
+
+                # Décision finale
+                decision = "Accepté" if prediction < decision_threshold else "Refusé"
+                st.markdown(f"### Décision : {decision}")
             else:
                 st.error(f"Erreur de l'API: {response.status_code}")
-        except requests.exceptions.SSLError as e:
-            st.error(f"Erreur SSL: {e}")
+        except Exception as e:
+            st.error(f"Erreur lors de la récupération des données : {str(e)}")
 
     # === Requête à l'API pour obtenir les valeurs SHAP ===
     if st.button("Interprétatbilité locale"):
@@ -122,7 +145,7 @@ if selected_sk_id_curr:
                 if isinstance(base_values, list):
                     base_values = np.array(base_values)
 
-                st.markdown("### Explication de la décision (SHAP)")
+                st.markdown("### Explication de la décision")
                 plt.figure(figsize=(12, 6))
                 shap.waterfall_plot(
                     shap.Explanation(values=shap_values, base_values=base_values, feature_names=test_df.columns)
