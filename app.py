@@ -11,7 +11,7 @@ from PIL import Image
 API_URL = "https://fastapi-appli-88ed9063cc28.herokuapp.com"
 
 # === Chargement des données test ===
-test_df = pd.read_csv('test.csv')
+test_df = pd.read_csv('test.csv', sep=';')
 
 # Chargement du logo
 logo_image = Image.open("logo.png")
