@@ -2,3 +2,5 @@
 
 Lien vers l'app: https://apppredictdefaut-az9ybn7na9pqz8gurdfnsl.streamlit.app/
 
+<img width="1190" height="624" alt="image" src="https://github.com/user-attachments/assets/248b74be-d6e9-4a0f-aa6b-ca06f4ee7d3c" />
+
